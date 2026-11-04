@@ -1,6 +1,8 @@
 # 3D Brain Tumor Segmentation on BraTS 2020
 
-**Segmenting gliomas in multimodal MRI: a 3D U-Net baseline compared with CNN–Transformer hybrids.**
+**Segmenting gliomas in multimodal MRI: a 3D U-Net baseline compared with a 3D Attention U-Net and a transformer model.**
+
+Paper: [Automatic Brain Tumor Segmentation: Exploring Beyond U-Net](https://anushehchaudry.com/papers/brain-tumor-segmentation.pdf)
 
 Each BraTS case is a 3D brain MRI with four modalities: T1, T1-contrast, T2, and FLAIR. The task is to label every voxel as one of three nested tumor regions:
 
@@ -8,24 +10,30 @@ Each BraTS case is a 3D brain MRI with four modalities: T1, T1-contrast, T2, and
 - **TC, tumor core.**
 - **ET, enhancing tumor:** the smallest and hardest region.
 
+## Results (Dice score)
+
+| Model | Whole tumor | Tumor core | Enhancing tumor |
+|---|---|---|---|
+| 3D U-Net | 0.870 | 0.782 | 0.745 |
+| 3D Attention U-Net | **0.881** | **0.786** | **0.796** |
+| DubTransBTS (transformer) | 0.635 | 0.592 | 0.569 |
+
+The attention U-Net improved on the baseline in every region, most of all on the enhancing tumor. The transformer model struggled to capture tumor detail.
+
 ## What's here
 
 | Notebook | What it does |
 |---|---|
-| `Baseline.ipynb` | Full 3D U-Net pipeline. Builds a train/validation/test split (232 / 37 / 100 cases), applies 3D data augmentation, trains the model, and reports **per-case Dice and Jaccard scores for WT, TC, and ET**. |
-| `BiTr_Unet.ipynb` | Adapts **BiTr-UNet** (a CNN encoder with a Transformer bottleneck) to BraTS 2020 data. |
-| `TrAtUNET.ipynb` | Experiments with a Transformer + attention U-Net variant. |
+| `Baseline.ipynb` | 3D U-Net pipeline: data loading, light augmentation (horizontal flips, brightness/contrast), training, and per-region Dice and Jaccard scores. |
+| `scratch.ipynb` | 3D Attention U-Net experiments. |
+| `BiTr_Unet.ipynb`, `TrAtUNET.ipynb` | Transformer-based experiments. |
 | `cs231n_baseline/` | Data preparation for the baseline. |
-
-## Evaluation
-
-The models are scored with **Dice** and **Jaccard (IoU)** for each tumor region. These are the standard BraTS overlap metrics, and per-region scores show where a model struggles. Whole tumor is usually segmented well. Enhancing tumor is the region where architectures differ most.
 
 ## Running it
 
 The notebooks run on Google Colab with a GPU, or on any CUDA machine with PyTorch.
 
-1. Request the **BraTS 2020** dataset from the [official challenge page](https://www.med.upenn.edu/cbica/brats2020/data.html). The dataset is not redistributed here, apart from one validation sample.
+1. Request the **BraTS 2020** dataset from the [official challenge page](https://www.med.upenn.edu/cbica/brats2020/data.html). The dataset is not redistributed here.
 2. Update the data paths in the first cell of each notebook.
 3. Run the notebook top to bottom.
 
